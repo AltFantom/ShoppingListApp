@@ -17,14 +17,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        rvShopItems = findViewById<RecyclerView>(R.id.rvShopItems)
+        rvShopItems = findViewById(R.id.rvShopItems)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setupRecyclerView()
         viewModel.shopList.observe(this) {
-            shopListAdapter.shopList = it
+            shopListAdapter.submitList(it)
         }
-        setupSwipeListener()
-        setupClickListeners()
     }
 
     private fun setupRecyclerView() {
@@ -40,6 +38,8 @@ class MainActivity : AppCompatActivity() {
                 ShopListAdapter.MAX_POOL_SIZE
             )
         }
+        setupSwipeListener()
+        setupClickListeners()
     }
 
     private fun setupClickListeners() {
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
             }
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                val shopItem = shopListAdapter.shopList[position]
+                val shopItem = shopListAdapter.currentList[position]
                 viewModel.deleteShopItem(shopItem)
             }
         }).attachToRecyclerView(rvShopItems)
