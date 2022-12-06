@@ -1,11 +1,11 @@
 package com.kupriyanov.shoppinglistapp.presentation
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.kupriyanov.shoppinglistapp.R
 
 class MainActivity : AppCompatActivity() {
@@ -47,7 +47,13 @@ class MainActivity : AppCompatActivity() {
             viewModel.changeEnableState(it)
         }
         shopListAdapter.onShopItemClick = {
-            Log.d("MainActivity", it.toString())
+            val intent = ShopItemActivity.newIntentEditItem(this, it.id)
+            startActivity(intent)
+        }
+        val fabAddShopItem = findViewById<FloatingActionButton>(R.id.fabAddShopItem)
+        fabAddShopItem.setOnClickListener {
+            val intent = ShopItemActivity.newIntentAddItem(this)
+            startActivity(intent)
         }
     }
 
@@ -63,6 +69,7 @@ class MainActivity : AppCompatActivity() {
             ): Boolean {
                 return false
             }
+
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 val shopItem = shopListAdapter.currentList[position]

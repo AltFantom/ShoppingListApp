@@ -1,4 +1,5 @@
 package com.kupriyanov.shoppinglistapp.presentation
+
 import androidx.recyclerview.widget.DiffUtil
 import com.kupriyanov.shoppinglistapp.domain.ShopItem
 
