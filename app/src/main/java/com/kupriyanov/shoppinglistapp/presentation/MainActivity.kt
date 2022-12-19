@@ -3,26 +3,29 @@ package com.kupriyanov.shoppinglistapp.presentation
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.kupriyanov.shoppinglistapp.R
+import com.kupriyanov.shoppinglistapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
-    private lateinit var viewModel: MainViewModel
-    private lateinit var shopListAdapter: ShopListAdapter
-    private lateinit var rvShopItems: RecyclerView
-    private var shopItemContainer: FragmentContainerView? = null
+    private val viewModel: MainViewModel by lazy {
+        ViewModelProvider(this)[MainViewModel::class.java]
+    }
+    private val shopListAdapter: ShopListAdapter by lazy {
+        ShopListAdapter()
+    }
+
+    private val binding: ActivityMainBinding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        shopItemContainer = findViewById(R.id.shopItemContainer)
-        rvShopItems = findViewById(R.id.rvShopItems)
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        setContentView(binding.root)
         setupRecyclerView()
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
@@ -30,8 +33,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     }
 
     private fun setupRecyclerView() {
-        shopListAdapter = ShopListAdapter()
-        with(rvShopItems) {
+        with(binding.rvShopItems) {
             this.adapter = shopListAdapter
             recycledViewPool.setMaxRecycledViews(
                 ShopListAdapter.VIEW_TYPE_ENABLED,
@@ -72,7 +74,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     }
 
     private fun isOnePaneMode(): Boolean {
-        return shopItemContainer == null
+        return binding.shopItemContainer == null
     }
 
     private fun launchFragment(fragment: Fragment) {
@@ -101,7 +103,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 val shopItem = shopListAdapter.currentList[position]
                 viewModel.deleteShopItem(shopItem)
             }
-        }).attachToRecyclerView(rvShopItems)
+        }).attachToRecyclerView(binding.rvShopItems)
     }
 
     override fun onEditingFinished() {

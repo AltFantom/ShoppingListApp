@@ -2,9 +2,6 @@ package com.kupriyanov.shoppinglistapp.presentation
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +12,9 @@ import com.kupriyanov.shoppinglistapp.domain.ShopItem
 
 class ShopItemFragment : Fragment() {
 
-    private lateinit var viewModel: ShopItemViewModel
+    private val viewModel: ShopItemViewModel by lazy {
+        ViewModelProvider(this)[ShopItemViewModel::class.java]
+    }
 
     private lateinit var onEditingFinishedListener: OnEditingFinishedListener
 
@@ -28,12 +27,10 @@ class ShopItemFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("LifecycleFragment", "onCreate")
         parseParams()
     }
 
     override fun onAttach(context: Context) {
-        Log.d("LifecycleFragment", "onAttach")
         super.onAttach(context)
         if (context is OnEditingFinishedListener) {
             onEditingFinishedListener = context
@@ -53,11 +50,9 @@ class ShopItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("LifecycleFragment", "onViewCreated")
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.viewModel = viewModel
         launchRightMode()
-        addTextChangedListeners()
-        observeViewModel()
         shouldCloseScreen()
     }
 
@@ -75,13 +70,9 @@ class ShopItemFragment : Fragment() {
 
     private fun launchEditMode() {
         viewModel.getShopItem(shopItemId)
-        viewModel.shopItem.observe(viewLifecycleOwner) {
-            binding.etName.setText(it.name)
-            binding.etCount.setText(it.count.toString())
-        }
         binding.buttonSave.setOnClickListener {
-            val name = binding.etName.text?.toString()
-            val count = binding.etCount.text?.toString()
+            val name = binding.etName.text.toString()
+            val count = binding.etCount.text.toString()
             viewModel.editShopItem(name, count)
         }
     }
@@ -92,56 +83,11 @@ class ShopItemFragment : Fragment() {
             val count = binding.etCount.text.toString()
             viewModel.addShopItem(name, count)
         }
-
     }
 
     private fun shouldCloseScreen() {
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
             onEditingFinishedListener.onEditingFinished()
-        }
-    }
-
-    private fun addTextChangedListeners() {
-        binding.etName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModel.resetErrorInputName()
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-            }
-
-        })
-        binding.etCount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModel.resetErrorInputCount()
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-            }
-
-        })
-    }
-
-    private fun observeViewModel() {
-        viewModel.errorInputCount.observe(viewLifecycleOwner) {
-            if (it) {
-                binding.tilCount.error = "Error"
-            } else {
-                binding.tilCount.error = null
-            }
-        }
-        viewModel.errorInputName.observe(viewLifecycleOwner) {
-            if (it) {
-                binding.tilName.error = "Error"
-            } else {
-                binding.tilName.error = null
-            }
         }
     }
 

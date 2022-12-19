@@ -1,6 +1,5 @@
 package com.kupriyanov.shoppinglistapp.presentation
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -55,7 +54,6 @@ class ShopItemViewModel : ViewModel() {
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
             _shopItem.value?.let {
-                Log.d("ShopItemViewModel", "editShopItem")
                 val item = it.copy(name = name, count = count)
                 editShopItemUseCase.editShopItem(item)
                 finishWork()
