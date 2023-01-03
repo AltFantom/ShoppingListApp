@@ -1,4 +1,4 @@
-package com.kupriyanov.shoppinglistapp.presentation
+package com.kupriyanov.shoppinglistapp.presentation.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -9,11 +9,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.kupriyanov.shoppinglistapp.R
 import com.kupriyanov.shoppinglistapp.databinding.ActivityMainBinding
+import com.kupriyanov.shoppinglistapp.presentation.adapters.ShopListAdapter
+import com.kupriyanov.shoppinglistapp.presentation.application.ShopListApp
+import com.kupriyanov.shoppinglistapp.presentation.viewModels.MainViewModel
+import com.kupriyanov.shoppinglistapp.presentation.viewModels.ViewModelFactory
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
     private val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this)[MainViewModel::class.java]
+        ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
     }
     private val shopListAdapter: ShopListAdapter by lazy {
         ShopListAdapter()
@@ -23,7 +31,12 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         ActivityMainBinding.inflate(layoutInflater)
     }
 
+    private val component by lazy {
+        (application as ShopListApp).component
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        component.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         setupRecyclerView()

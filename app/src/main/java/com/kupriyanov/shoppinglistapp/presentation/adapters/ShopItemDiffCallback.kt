@@ -1,4 +1,4 @@
-package com.kupriyanov.shoppinglistapp.presentation
+package com.kupriyanov.shoppinglistapp.presentation.adapters
 
 import androidx.recyclerview.widget.DiffUtil
 import com.kupriyanov.shoppinglistapp.domain.ShopItem

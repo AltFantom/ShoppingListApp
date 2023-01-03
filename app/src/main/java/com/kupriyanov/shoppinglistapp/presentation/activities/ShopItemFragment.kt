@@ -1,4 +1,4 @@
-package com.kupriyanov.shoppinglistapp.presentation
+package com.kupriyanov.shoppinglistapp.presentation.activities
 
 import android.content.Context
 import android.os.Bundle
@@ -9,11 +9,18 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.kupriyanov.shoppinglistapp.databinding.FragmentShopItemBinding
 import com.kupriyanov.shoppinglistapp.domain.ShopItem
+import com.kupriyanov.shoppinglistapp.presentation.application.ShopListApp
+import com.kupriyanov.shoppinglistapp.presentation.viewModels.ShopItemViewModel
+import com.kupriyanov.shoppinglistapp.presentation.viewModels.ViewModelFactory
+import javax.inject.Inject
 
 class ShopItemFragment : Fragment() {
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
     private val viewModel: ShopItemViewModel by lazy {
-        ViewModelProvider(this)[ShopItemViewModel::class.java]
+        ViewModelProvider(this, viewModelFactory)[ShopItemViewModel::class.java]
     }
 
     private lateinit var onEditingFinishedListener: OnEditingFinishedListener
@@ -25,18 +32,23 @@ class ShopItemFragment : Fragment() {
     private var screenMode: String = MODE_UNKNOWN
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        parseParams()
+    private val component by lazy {
+        (requireActivity().application as ShopListApp).component
     }
 
     override fun onAttach(context: Context) {
+        component.inject(this)
         super.onAttach(context)
         if (context is OnEditingFinishedListener) {
             onEditingFinishedListener = context
         } else {
             throw java.lang.RuntimeException("Activity must implement OnEditingFinishedListener")
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        parseParams()
     }
 
     override fun onCreateView(

@@ -1,4 +1,4 @@
-package com.kupriyanov.shoppinglistapp.presentation
+package com.kupriyanov.shoppinglistapp.presentation.activities
 
 import android.content.Context
 import android.content.Intent
